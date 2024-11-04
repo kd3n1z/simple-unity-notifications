@@ -8,6 +8,7 @@
         "url": "https://komarkov.com/"
     },
     "license": "MIT",
+    "documentationUrl": "https://github.com/kd3n1z/simple-unity-notifications/blob/main/README.md#usage",
     "unity": "2021.3",
     "dependencies": {
         "com.unity.mobile.notifications": "2.3.2"
