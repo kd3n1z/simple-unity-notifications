@@ -33,7 +33,7 @@ To use NotificationsManager, you need to call the <code>Initialize</code> method
 notificationsManager.Initialize(
     androidSmallIcon: "icon_small",  // Uses a specific small icon for Android
     androidLargeIcon: "icon_large",  // Uses a specific large icon for Android
-    debounceInterval: 2.0f,          // Limits rescheduling operations to once every 2 seconds
+    debounceInterval: 2.0f,          // Limits rescheduling to once every 2 seconds
     loggingEnabled: true             // Enables logging for debugging
 );
 ```
