@@ -1,0 +1,10 @@
+{
+    "name": "com.kd3n1z.sun",
+    "version": "0.0.1",
+    "description": "Simple Unity Notifications",
+    "displayName": "Simple Unity Notifications",
+    "unity": "2021.3",
+    "dependencies": {
+        "com.unity.mobile.notifications": "2.3.2"
+    }
+}

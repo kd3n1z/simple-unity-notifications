@@ -1,0 +1,21 @@
+{
+    "name": "sun",
+    "rootNamespace": "Sun",
+    "references": [
+        "GUID:ac145e6b8c6034cdbadc8c6e26aedbcf",
+        "GUID:1e8e55397bd004beaba78a667566665f"
+    ],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "iOS"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
