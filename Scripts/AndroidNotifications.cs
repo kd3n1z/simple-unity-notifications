@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using Unity.Notifications.Android;
+using UnityEngine;
 using UnityEngine.Android;
 
 namespace Sun {
@@ -30,10 +31,7 @@ namespace Sun {
 
         internal static IEnumerator RequestNotificationPermission() {
             PermissionRequest request = new PermissionRequest();
-
-            while (request.Status == PermissionStatus.RequestPending) {
-                yield return null;
-            }
+            yield return new WaitWhile(() => request.Status == PermissionStatus.RequestPending);
         }
 
         internal static void ScheduleNotification(string title, string text, DateTime fireTime) {

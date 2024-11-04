@@ -118,7 +118,7 @@ namespace Sun {
             AndroidNotifications.RegisterNotificationChannel();
             yield return AndroidNotifications.RequestNotificationPermission();
 #elif UNITY_IOS
-// TODO
+            yield return iOSNotifications.RequestAuthorization();
 #endif
             Log("Initialized");
             _initialized = true;
@@ -128,7 +128,7 @@ namespace Sun {
 #if UNITY_ANDROID
             AndroidNotifications.ClearScheduledNotifications();
 #elif UNITY_IOS
-// TODO
+            iOSNotifications.ClearScheduledNotifications();
 #endif
         }
 
@@ -136,7 +136,7 @@ namespace Sun {
 #if UNITY_ANDROID
             AndroidNotifications.ScheduleNotification(title, text, DateTimeOffset.FromUnixTimeSeconds(fireTimestamp).LocalDateTime);
 #elif UNITY_IOS
-// TODO
+            iOSNotifications.ScheduleNotification(title, text, TimeSpan.FromSeconds(fireTimestamp - GetCurrentTimestamp()));
 #endif
         }
 
