@@ -14,10 +14,12 @@ namespace Sun {
 
         private float _debounceInterval;
         private bool _loggingEnabled;
+        private string _androidSmallIcon;
+        private string _androidLargeIcon;
 
         #endregion
 
-        public void Init(float debounceInterval = 1, bool loggingEnabled = false) {
+        public void Initialize(string androidSmallIcon = "", string androidLargeIcon = "", float debounceInterval = 1, bool loggingEnabled = false) {
             if (_initialized) {
                 throw new Exception($"{nameof(NotificationsManager)} is already initialized");
             }
@@ -28,6 +30,8 @@ namespace Sun {
 
             _debounceInterval = debounceInterval;
             _loggingEnabled = loggingEnabled;
+            _androidSmallIcon = androidSmallIcon;
+            _androidLargeIcon = androidLargeIcon;
 
             if (PlayerPrefs.HasKey(PlayerPrefsKey)) {
                 string json = PlayerPrefs.GetString(PlayerPrefsKey);
@@ -45,8 +49,6 @@ namespace Sun {
 
         public void SetNotification(string uniqueId, string title, string text, DateTime fireDateTime) =>
             SetNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds());
-
-        // TODO: icons
 
         public void SetNotification(string uniqueId, string title, string text, long fireTimestamp) {
             Log($"Setting notification \"{uniqueId}\": title=\"{title}\", text=\"{text}\", fireTimestamp=\"{fireTimestamp}\"");
@@ -132,9 +134,14 @@ namespace Sun {
 #endif
         }
 
-        private static void ScheduleNotification(string title, string text, long fireTimestamp) {
+        private void ScheduleNotification(string title, string text, long fireTimestamp) {
 #if UNITY_ANDROID
-            AndroidNotifications.ScheduleNotification(title, text, DateTimeOffset.FromUnixTimeSeconds(fireTimestamp).LocalDateTime);
+            AndroidNotifications.ScheduleNotification(title,
+                text,
+                DateTimeOffset.FromUnixTimeSeconds(fireTimestamp).LocalDateTime,
+                _androidSmallIcon,
+                _androidLargeIcon
+            );
 #elif UNITY_IOS
             iOSNotifications.ScheduleNotification(title, text, TimeSpan.FromSeconds(fireTimestamp - GetCurrentTimestamp()));
 #endif

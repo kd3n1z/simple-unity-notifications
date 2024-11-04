@@ -1,8 +1,13 @@
 {
     "name": "com.kd3n1z.sun",
-    "version": "0.0.2",
-    "description": "Simple Unity Notifications",
+    "version": "1.0.0",
     "displayName": "Simple Unity Notifications",
+    "description": "SUN is a lightweight, easy-to-use Unity Mobile Notifications wrapper for managing mobile notifications in Unity projects.",
+    "author": {
+        "name": "Denis Komarkov",
+        "url": "https://komarkov.com/"
+    },
+    "license": "MIT",
     "unity": "2021.3",
     "dependencies": {
         "com.unity.mobile.notifications": "2.3.2"
