@@ -21,9 +21,19 @@ namespace Sun {
             set {
                 for (int i = 0; i < list.Count; i++) {
                     if (list[i].uniqueId == notificationUniqueId) {
-                        list[i] = value;
+                        if (value == null) {
+                            list.RemoveAt(i);
+                        }
+                        else {
+                            list[i] = value;
+                        }
+
                         return;
                     }
+                }
+
+                if (value == null) {
+                    return;
                 }
 
                 list.Add(value);

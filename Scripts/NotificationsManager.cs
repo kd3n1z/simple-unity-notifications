@@ -52,12 +52,7 @@ namespace Sun {
 
         public void SetNotification(string uniqueId, string title, string text, long fireTimestamp, string androidSmallIcon = "", string androidLargeIcon = "") {
             Log($"Setting notification \"{uniqueId}\": title=\"{title}\", text=\"{text}\", fireTimestamp=\"{fireTimestamp}\"");
-
-            if (_debounceTimer < 0) {
-                _debounceTimer = _debounceInterval;
-                Log("Debounce timer reset");
-            }
-
+            
             _notifications[uniqueId] = new NotificationsCollection.Notification {
                 uniqueId = uniqueId,
                 title = title,
@@ -66,6 +61,16 @@ namespace Sun {
                 androidSmallIcon = androidSmallIcon,
                 androidLargeIcon = androidLargeIcon
             };
+            
+            ResetDebounceTimer();
+        }
+
+        public void RemoveNotification(string uniqueId) {
+            Log($"Removing notification \"{uniqueId}\"");
+            
+            _notifications[uniqueId] = null;
+            
+            ResetDebounceTimer();
         }
 
         public static long GetCurrentTimestamp() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -73,6 +78,13 @@ namespace Sun {
         #region Private
 
         // Debouncing
+
+        private void ResetDebounceTimer() {
+            if (_debounceTimer < 0) {
+                _debounceTimer = _debounceInterval;
+                Log("Debounce timer reset");
+            }
+        }
 
         private float _debounceTimer = -1;
 
