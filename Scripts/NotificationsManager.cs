@@ -86,14 +86,14 @@ namespace Sun {
         public void SetNotification(string uniqueId, string title, string text, long fireTimestamp, string androidSmallIcon = "", string androidLargeIcon = "") {
             Log($"Setting notification \"{uniqueId}\": title=\"{title}\", text=\"{text}\", fireTimestamp=\"{fireTimestamp}\"");
 
-            _notifications[uniqueId] = new NotificationsCollection.Notification {
+            _notifications.SetNotification(new NotificationsCollection.Notification {
                 uniqueId = uniqueId,
                 title = title,
                 text = text,
                 fireTimestamp = fireTimestamp,
                 androidSmallIcon = androidSmallIcon,
                 androidLargeIcon = androidLargeIcon
-            };
+            });
 
             ResetDebounceTimer();
         }
@@ -105,9 +105,9 @@ namespace Sun {
         public void RemoveNotification(string uniqueId) {
             Log($"Removing notification \"{uniqueId}\"");
 
-            _notifications[uniqueId] = null;
-
-            ResetDebounceTimer();
+            if (_notifications.RemoveNotification(uniqueId)) {
+                ResetDebounceTimer();
+            }
         }
 
         /// <summary>

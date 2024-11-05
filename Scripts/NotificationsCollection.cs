@@ -7,37 +7,38 @@ namespace Sun {
     internal class NotificationsCollection {
         public List<Notification> list = new List<Notification>();
 
-        public Notification this[string notificationUniqueId] {
-            get {
-                foreach (Notification notification in list) {
-                    if (notification.uniqueId == notificationUniqueId) {
-                        return notification;
-                    }
+        public Notification GetNotification(string notificationUniqueId) {
+            foreach (Notification notification in list) {
+                if (notification.uniqueId == notificationUniqueId) {
+                    return notification;
                 }
-
-                throw new KeyNotFoundException();
             }
 
-            set {
-                for (int i = 0; i < list.Count; i++) {
-                    if (list[i].uniqueId == notificationUniqueId) {
-                        if (value == null) {
-                            list.RemoveAt(i);
-                        }
-                        else {
-                            list[i] = value;
-                        }
+            throw new KeyNotFoundException();
+        }
 
-                        return;
-                    }
-                }
+        public void SetNotification(Notification notification) {
+            for (int i = 0; i < list.Count; i++) {
+                if (list[i].uniqueId == notification.uniqueId) {
+                    list[i] = notification;
 
-                if (value == null) {
                     return;
                 }
-
-                list.Add(value);
             }
+
+            list.Add(notification);
+        }
+
+        public bool RemoveNotification(string uniqueId) {
+            for (int i = 0; i < list.Count; i++) {
+                if (list[i].uniqueId == uniqueId) {
+                    list.RemoveAt(i);
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void CleanExpired(long currentTimestamp) {
