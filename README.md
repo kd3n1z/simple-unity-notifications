@@ -27,7 +27,7 @@ To use NotificationsManager, you need to call the <code>Initialize</code> method
     -   A flag that enables or disables debug logging within the <code>NotificationsManager</code>. When set to <code>true</code>, messages are logged to the Unity console for better visibility during development and debugging.
     -   **Default Value**: <code>false</code>
 
-<br/>
+Example:
 
 ```csharp
 // Initialize the notifications manager
@@ -56,8 +56,6 @@ To schedule a notification, use the <code>SetNotification</code> method provided
 
 > [!IMPORTANT]
 > The <code>uniqueId</code> parameter is used to override existing notifications. If a notification with the same <code>uniqueId</code> already exists, it will be updated with the new details. Ensure that you use a unique ID for each notification unless you intend to replace an existing one.
-
-<br/>
 
 Example using <code>DateTime</code>:
 
@@ -96,7 +94,7 @@ To remove a notification, use the <code>RemoveNotification</code> method.
 > [!NOTE]
 > You can safely remove a notification even if it hasn't been set; this will not cause any errors.
 
-<br/>
+Example:
 
 ```csharp
 // Remove a previously scheduled notification
