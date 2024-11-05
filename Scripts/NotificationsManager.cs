@@ -123,6 +123,8 @@ namespace Sun {
             yield return AndroidNotifications.RequestNotificationPermission();
 #elif UNITY_IOS
             yield return iOSNotifications.RequestAuthorization();
+#else
+            yield return null;
 #endif
             Log("Initialized");
             _initialized = true;
