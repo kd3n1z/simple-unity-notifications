@@ -30,6 +30,7 @@ To use NotificationsManager, you need to call the <code>Initialize</code> method
 <br/>
 
 ```csharp
+// Initialize the notifications manager
 notificationsManager.Initialize(
     defaultAndroidSmallIcon: "icon_small",
     defaultAndroidLargeIcon: "icon_large",
@@ -38,9 +39,11 @@ notificationsManager.Initialize(
 );
 ```
 
-### Notifications Scheduling
+### Notifications
 
-To schedule a notification, use the <code>SetNotification</code> method provided by the <code>NotificationsManager</code>. This method allows you to create notifications by specifying a unique identifier, title, content text, and the time at which the notification should fire. The notification time can be set using either a <code>DateTime</code> object or a **UTC Unix timestamp (in seconds)**.
+#### Scheduling
+
+To schedule a notification, use the <code>SetNotification</code> method provided by the <code>NotificationsManager</code>. This method allows you to create notifications by specifying a unique identifier, title, content text, and the time at which the notification should fire. The notification time can be set using either a <code>DateTime</code> object or a **UTC Unix timestamp (in seconds)**. Additionally, you can specify Android icons.
 
 -   <code>uniqueId</code> (string): A unique identifier for the notification.
 -   <code>title</code> (string): The title displayed at the top of the notification.
@@ -82,6 +85,22 @@ notificationsManager.SetNotification(
     androidSmallIcon: "custom_icon_small", // Optional override
     androidLargeIcon: "custom_icon_large"  // Optional override0
 );
+```
+
+#### Unscheduling
+
+To remove a notification, use the <code>RemoveNotification</code> method.
+
+-   <code>uniqueId</code> (string): A unique identifier for the notification.
+
+> [!NOTE]
+> You can safely remove a notification even if it hasn't been set; this will not cause any errors.
+
+<br/>
+
+```csharp
+// Remove a previously scheduled notification
+notificationsManager.RemoveNotification("lives_restored");
 ```
 
 <br/>
