@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine;
 
 namespace Sun {
+    /// <summary>
+    /// The core component of Simple Unity Notifications (SUN). Manages the scheduling and removal of notifications.
+    /// </summary>
     public class NotificationsManager : MonoBehaviour {
         private const string PlayerPrefsKey = "SimpleUnityNotificationsData";
 
@@ -19,6 +22,15 @@ namespace Sun {
 
         #endregion
 
+        /// <summary>
+        /// Initializes the <see cref="NotificationsManager"/> with optional parameters for default icons, debounce interval, and logging.
+        /// </summary>
+        /// <param name="defaultAndroidSmallIcon">The default small icon for Android notifications.</param>
+        /// <param name="defaultAndroidLargeIcon">The default large icon for Android notifications.</param>
+        /// <param name="debounceInterval">The time interval in seconds to debounce notification actions. Must be non-negative.</param>
+        /// <param name="loggingEnabled">Specifies whether logging is enabled for notifications.</param>
+        /// <exception cref="Exception">Thrown if the manager is already initialized.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the debounce interval is negative.</exception>
         public void Initialize(string defaultAndroidSmallIcon = "", string defaultAndroidLargeIcon = "", float debounceInterval = 1, bool loggingEnabled = false) {
             if (_initialized) {
                 throw new Exception($"{nameof(NotificationsManager)} is already initialized");
@@ -47,12 +59,33 @@ namespace Sun {
             StartCoroutine(PlatformInitRoutine());
         }
 
+        /// <summary>
+        /// Sets a notification with a specified unique ID, title, text, and fire date/time using the default icons.
+        /// </summary>
+        /// <param name="uniqueId">The unique identifier for the notification.</param>
+        /// <param name="title">The title of the notification.</param>
+        /// <param name="text">The text content of the notification.</param>
+        /// <param name="fireDateTime">The date and time when the notification should be triggered.</param>
+        /// <param name="androidSmallIcon">Optional. The small icon for Android notifications.</param>
+        /// <param name="androidLargeIcon">Optional. The large icon for Android notifications.</param>
         public void SetNotification(string uniqueId, string title, string text, DateTime fireDateTime, string androidSmallIcon = "", string androidLargeIcon = "") =>
             SetNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds(), androidSmallIcon, androidLargeIcon);
 
+        /// <summary>
+        /// Sets a notification with a specified unique ID, title, text, and fire timestamp.
+        /// </summary>
+        /// <param name="uniqueId">The unique identifier for the notification.</param>
+        /// <param name="title">The title of the notification.</param>
+        /// <param name="text">The text content of the notification.</param>
+        /// <param name="fireTimestamp">The timestamp (in seconds) when the notification should be triggered.</param>
+        /// <param name="androidSmallIcon">Optional. The small icon for Android notifications.</param>
+        /// <param name="androidLargeIcon">Optional. The large icon for Android notifications.</param>
+        /// <remarks>
+        /// The <paramref name="fireTimestamp"/> must be in seconds and in UTC. The timestamp can also be obtained using the <see cref="GetCurrentTimestamp"/> method.
+        /// </remarks>
         public void SetNotification(string uniqueId, string title, string text, long fireTimestamp, string androidSmallIcon = "", string androidLargeIcon = "") {
             Log($"Setting notification \"{uniqueId}\": title=\"{title}\", text=\"{text}\", fireTimestamp=\"{fireTimestamp}\"");
-            
+
             _notifications[uniqueId] = new NotificationsCollection.Notification {
                 uniqueId = uniqueId,
                 title = title,
@@ -61,18 +94,26 @@ namespace Sun {
                 androidSmallIcon = androidSmallIcon,
                 androidLargeIcon = androidLargeIcon
             };
-            
+
             ResetDebounceTimer();
         }
 
+        /// <summary>
+        /// Removes a notification specified by its unique ID.
+        /// </summary>
+        /// <param name="uniqueId">The unique identifier for the notification to be removed.</param>
         public void RemoveNotification(string uniqueId) {
             Log($"Removing notification \"{uniqueId}\"");
-            
+
             _notifications[uniqueId] = null;
-            
+
             ResetDebounceTimer();
         }
 
+        /// <summary>
+        /// Gets the current timestamp in seconds since the Unix epoch.
+        /// </summary>
+        /// <returns>The current timestamp as a long value.</returns>
         public static long GetCurrentTimestamp() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         #region Private
