@@ -79,7 +79,7 @@ notificationsManager.SetNotification(
     "lives_restored",
     "Lives Restored!",
     "Your lives have been fully restored. Jump back into the game!",
-    NotificationsManager.GetCurrentTimestamp() + 360,
+    NotificationsManager.GetCurrentTimestamp() + 3600,
     androidSmallIcon: "custom_icon_small", // Optional override
     androidLargeIcon: "custom_icon_large"  // Optional override0
 );
