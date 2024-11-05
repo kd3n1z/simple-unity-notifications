@@ -40,6 +40,8 @@ namespace Sun {
             public string title;
             public string text;
             public long fireTimestamp;
+            public string androidSmallIcon;
+            public string androidLargeIcon;
         }
     }
 }

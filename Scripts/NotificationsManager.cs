@@ -14,12 +14,12 @@ namespace Sun {
 
         private float _debounceInterval;
         private bool _loggingEnabled;
-        private string _androidSmallIcon;
-        private string _androidLargeIcon;
+        private string _defaultAndroidSmallIcon;
+        private string _defaultAndroidLargeIcon;
 
         #endregion
 
-        public void Initialize(string androidSmallIcon = "", string androidLargeIcon = "", float debounceInterval = 1, bool loggingEnabled = false) {
+        public void Initialize(string defaultAndroidSmallIcon = "", string defaultAndroidLargeIcon = "", float debounceInterval = 1, bool loggingEnabled = false) {
             if (_initialized) {
                 throw new Exception($"{nameof(NotificationsManager)} is already initialized");
             }
@@ -30,8 +30,8 @@ namespace Sun {
 
             _debounceInterval = debounceInterval;
             _loggingEnabled = loggingEnabled;
-            _androidSmallIcon = androidSmallIcon;
-            _androidLargeIcon = androidLargeIcon;
+            _defaultAndroidSmallIcon = defaultAndroidSmallIcon;
+            _defaultAndroidLargeIcon = defaultAndroidLargeIcon;
 
             if (PlayerPrefs.HasKey(PlayerPrefsKey)) {
                 string json = PlayerPrefs.GetString(PlayerPrefsKey);
@@ -47,10 +47,10 @@ namespace Sun {
             StartCoroutine(PlatformInitRoutine());
         }
 
-        public void SetNotification(string uniqueId, string title, string text, DateTime fireDateTime) =>
-            SetNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds());
+        public void SetNotification(string uniqueId, string title, string text, DateTime fireDateTime, string androidSmallIcon = "", string androidLargeIcon = "") =>
+            SetNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds(), androidSmallIcon, androidLargeIcon);
 
-        public void SetNotification(string uniqueId, string title, string text, long fireTimestamp) {
+        public void SetNotification(string uniqueId, string title, string text, long fireTimestamp, string androidSmallIcon = "", string androidLargeIcon = "") {
             Log($"Setting notification \"{uniqueId}\": title=\"{title}\", text=\"{text}\", fireTimestamp=\"{fireTimestamp}\"");
 
             if (_debounceTimer < 0) {
@@ -62,7 +62,9 @@ namespace Sun {
                 uniqueId = uniqueId,
                 title = title,
                 text = text,
-                fireTimestamp = fireTimestamp
+                fireTimestamp = fireTimestamp,
+                androidSmallIcon = androidSmallIcon,
+                androidLargeIcon = androidLargeIcon
             };
         }
 
@@ -94,7 +96,7 @@ namespace Sun {
             ClearScheduledNotifications();
 
             foreach (NotificationsCollection.Notification notification in _notifications.list) {
-                ScheduleNotification(notification.title, notification.text, notification.fireTimestamp);
+                ScheduleNotification(notification);
             }
 
             Log("Notifications rescheduled");
@@ -134,16 +136,30 @@ namespace Sun {
 #endif
         }
 
-        private void ScheduleNotification(string title, string text, long fireTimestamp) {
+        private void ScheduleNotification(NotificationsCollection.Notification notification) {
 #if UNITY_ANDROID
-            AndroidNotifications.ScheduleNotification(title,
-                text,
-                DateTimeOffset.FromUnixTimeSeconds(fireTimestamp).LocalDateTime,
-                _androidSmallIcon,
-                _androidLargeIcon
+            string smallIcon = notification.androidSmallIcon;
+            if (string.IsNullOrEmpty(smallIcon)) {
+                smallIcon = _defaultAndroidSmallIcon;
+            }
+
+            string largeIcon = notification.androidLargeIcon;
+            if (string.IsNullOrEmpty(largeIcon)) {
+                largeIcon = _defaultAndroidLargeIcon;
+            }
+
+            AndroidNotifications.ScheduleNotification(notification.title,
+                notification.text,
+                DateTimeOffset.FromUnixTimeSeconds(notification.fireTimestamp).LocalDateTime,
+                smallIcon,
+                largeIcon
             );
 #elif UNITY_IOS
-            iOSNotifications.ScheduleNotification(title, text, TimeSpan.FromSeconds(fireTimestamp - GetCurrentTimestamp()));
+            iOSNotifications.ScheduleNotification(
+                notification.title,
+                notification.text,
+                TimeSpan.FromSeconds(notification.fireTimestamp - GetCurrentTimestamp())
+            );
 #endif
         }
 
