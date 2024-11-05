@@ -14,11 +14,11 @@ SUN is a lightweight, easy-to-use [Unity Mobile Notifications](https://github.co
 
 To use NotificationsManager, you need to call the <code>Initialize</code> method to configure and prepare the manager for handling notifications. This method takes several optional parameters that allow you to customize its behavior:
 
--   <code>androidSmallIcon</code> (string)
-    -   Specifies the name of the small icon used in Android notifications. This should correspond to the name of an icon in the <code>Project Settings > Mobile Notifications > Android > Notification Icons</code>
+-   <code>defaultAndroidSmallIcon</code> (string)
+    -   Specifies the default small icon name used in Android notifications. This should match an icon in <code>Project Settings > Mobile Notifications > Android > Notification Icons</code>
     -   **Default Value**: <code>""</code>
--   <code>androidLargeIcon</code> (string)
-    -   Specifies the name of the large icon used in Android notifications. This should correspond to the name of an icon in the <code>Project Settings > Mobile Notifications > Android > Notification Icons</code>
+-   <code>defaultAndroidLargeIcon</code> (string)
+    -   Specifies the default large icon name used in Android notifications. This should match an icon in <code>Project Settings > Mobile Notifications > Android > Notification Icons</code>
     -   **Default Value**: <code>""</code>
 -   <code>debounceInterval</code> (float)
     -   The time interval (in seconds) used to control how frequently notifications are rescheduled and saved. This helps reduce the overhead of scheduling notifications in quick succession.
@@ -31,10 +31,10 @@ To use NotificationsManager, you need to call the <code>Initialize</code> method
 
 ```csharp
 notificationsManager.Initialize(
-    androidSmallIcon: "icon_small",  // Uses a specific small icon for Android
-    androidLargeIcon: "icon_large",  // Uses a specific large icon for Android
-    debounceInterval: 2.0f,          // Limits rescheduling to once every 2 seconds
-    loggingEnabled: true             // Enables logging for debugging
+    defaultAndroidSmallIcon: "icon_small",
+    defaultAndroidLargeIcon: "icon_large",
+    debounceInterval: 2.0f
+    loggingEnabled: true
 );
 ```
 
@@ -48,6 +48,8 @@ To schedule a notification, use the <code>SetNotification</code> method provided
 -   <code>fireDateTime</code> (DateTime): The date and time at which the notification should trigger.
 -   <code>fireTimestamp</code> (long): A **UTC Unix timestamp (in seconds)** specifying when the notification should trigger.
     > Use <code>NotificationsManager.GetCurrentTimestamp()</code> to obtain the current time in UTC for accurate scheduling.
+-   <code>androidSmallIcon</code> (string, optional): Specifies the small icon for the notification, overriding the default set in initialization.
+-   <code>androidLargeIcon</code> (string, optional): Specifies the large icon for the notification, overriding the default set in initialization.
 
 > [!IMPORTANT]
 > The <code>uniqueId</code> parameter is used to override existing notifications. If a notification with the same <code>uniqueId</code> already exists, it will be updated with the new details. Ensure that you use a unique ID for each notification unless you intend to replace an existing one.
@@ -62,7 +64,9 @@ notificationsManager.SetNotification(
     "lives_restored",
     "Lives Restored!",
     "Your lives have been fully restored. Jump back into the game!",
-    DateTime.Now.AddHours(1)
+    DateTime.Now.AddHours(1),
+    androidSmallIcon: "custom_icon_small", // Optional override
+    androidLargeIcon: "custom_icon_large"  // Optional override
 );
 ```
 
@@ -74,7 +78,9 @@ notificationsManager.SetNotification(
     "lives_restored",
     "Lives Restored!",
     "Your lives have been fully restored. Jump back into the game!",
-    NotificationsManager.GetCurrentTimestamp() + 3600
+    NotificationsManager.GetCurrentTimestamp() + 360,
+    androidSmallIcon: "custom_icon_small", // Optional override
+    androidLargeIcon: "custom_icon_large"  // Optional override0
 );
 ```
 
