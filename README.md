@@ -81,7 +81,7 @@ notificationsManager.SetNotification(
     "Your lives have been fully restored. Jump back into the game!",
     NotificationsManager.GetCurrentTimestamp() + 3600,
     androidSmallIcon: "custom_icon_small", // Optional override
-    androidLargeIcon: "custom_icon_large"  // Optional override0
+    androidLargeIcon: "custom_icon_large"  // Optional override
 );
 ```
 
@@ -101,8 +101,6 @@ Example:
 notificationsManager.RemoveNotification("lives_restored");
 ```
 
-<br/>
-
 That's it. The `NotificationsManager` automatically persists and reschedules notifications as needed, while the `debounceInterval` prevents frequent updates.
 
 ## Recommended Project Settings
@@ -116,6 +114,25 @@ Navigate to `Project Settings > Mobile Notifications` and configure the followin
 | iOS      | Request Authorization on App Launch        | `true`                 |
 |          | Default Notification Authorization Options | `Badge, Sound, Alert`  |
 |          | Enable Time Sensitive Notifications        | `true`                 |
+
+## Notification References
+
+<details>
+  <summary><strong>iOS (iPhone 16 Pro)</strong></summary>
+  
+  <img alt="iOS Notification (iPhone 16 Pro)" src="Images~/iOS Notification.png" width="585"/>
+</details>
+
+<details>
+  <summary><strong>Android (Pixel Fold)</strong></summary>
+  
+  <img alt="Android Notification (Pixel Fold)" src="Images~/Android Pixel Notification.png" width="523"/>
+  
+  <ul>
+    <li><strong>S</strong> is depicted on the small icon and <strong>L</strong> on the large one.</li>
+    <li>The accent color of the notification is <code>#ffc080</code> (you can see it on the small icon).</li>
+  </ul>
+</details>
 
 ## License
 
