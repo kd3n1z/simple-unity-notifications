@@ -28,6 +28,8 @@ namespace Sun {
                 ThreadIdentifier = "thread1",
                 Trigger = timeTrigger,
             };
+
+            iOSNotificationCenter.ScheduleNotification(notification);
         }
 
         public static void ClearScheduledNotifications() => iOSNotificationCenter.RemoveAllScheduledNotifications();
