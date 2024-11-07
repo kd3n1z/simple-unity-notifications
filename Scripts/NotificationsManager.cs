@@ -13,37 +13,40 @@ namespace Sun {
 
         private bool _initialized;
 
-        #region Config
+        #region Defaults
 
-        private float _debounceInterval;
-        private bool _loggingEnabled;
-        private string _defaultAndroidSmallIcon;
-        private string _defaultAndroidLargeIcon;
+        private Config _config = Config.Default;
+        private AndroidOptions _defaultAndroidOptions;
 
         #endregion
 
         /// <summary>
         /// Initializes the <see cref="NotificationsManager"/> with optional parameters for default icons, debounce interval, and logging.
         /// </summary>
-        /// <param name="defaultAndroidSmallIcon">The default small icon for Android notifications.</param>
-        /// <param name="defaultAndroidLargeIcon">The default large icon for Android notifications.</param>
-        /// <param name="debounceInterval">The time interval in seconds to debounce notification actions. Must be non-negative.</param>
-        /// <param name="loggingEnabled">Specifies whether logging is enabled for notifications.</param>
         /// <exception cref="Exception">Thrown if the manager is already initialized.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the debounce interval is negative.</exception>
-        public void Initialize(string defaultAndroidSmallIcon = "", string defaultAndroidLargeIcon = "", float debounceInterval = 1, bool loggingEnabled = false) {
+        public void Initialize(Config? config = null, AndroidOptions? defaultAndroidOptions = null) {
             if (_initialized) {
                 throw new Exception($"{nameof(NotificationsManager)} is already initialized");
             }
 
-            if (debounceInterval < 0) {
-                throw new ArgumentOutOfRangeException();
+            if (config.HasValue) {
+                Config configValue = config.Value;
+
+                if (configValue.DebounceInterval.HasValue) {
+                    _config.DebounceInterval = configValue.DebounceInterval.Value;
+                }
+
+                if (configValue.EnableLogging.HasValue) {
+                    _config.EnableLogging = configValue.EnableLogging.Value;
+                }
             }
 
-            _debounceInterval = debounceInterval;
-            _loggingEnabled = loggingEnabled;
-            _defaultAndroidSmallIcon = defaultAndroidSmallIcon;
-            _defaultAndroidLargeIcon = defaultAndroidLargeIcon;
+            _defaultAndroidOptions = AndroidOptions.Override(AndroidOptions.Default, defaultAndroidOptions);
+
+            if (_config.DebounceInterval < 0) {
+                throw new ArgumentOutOfRangeException();
+            }
 
             if (PlayerPrefs.HasKey(PlayerPrefsKey)) {
                 string json = PlayerPrefs.GetString(PlayerPrefsKey);
@@ -66,10 +69,8 @@ namespace Sun {
         /// <param name="title">The title of the notification.</param>
         /// <param name="text">The text content of the notification.</param>
         /// <param name="fireDateTime">The date and time when the notification should be triggered.</param>
-        /// <param name="androidSmallIcon">Optional. The small icon for Android notifications.</param>
-        /// <param name="androidLargeIcon">Optional. The large icon for Android notifications.</param>
-        public void ScheduleNotification(string uniqueId, string title, string text, DateTime fireDateTime, string androidSmallIcon = "", string androidLargeIcon = "") =>
-            ScheduleNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds(), androidSmallIcon, androidLargeIcon);
+        public void ScheduleNotification(string uniqueId, string title, string text, DateTime fireDateTime, AndroidOptions? androidOptions = null) =>
+            ScheduleNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds(), androidOptions);
 
         /// <summary>
         /// Schedules a notification with a specified unique ID, title, text, and fire timestamp.
@@ -78,21 +79,32 @@ namespace Sun {
         /// <param name="title">The title of the notification.</param>
         /// <param name="text">The text content of the notification.</param>
         /// <param name="fireTimestamp">The timestamp (in seconds) when the notification should be triggered.</param>
-        /// <param name="androidSmallIcon">Optional. The small icon for Android notifications.</param>
-        /// <param name="androidLargeIcon">Optional. The large icon for Android notifications.</param>
         /// <remarks>
         /// The <paramref name="fireTimestamp"/> must be in seconds and in UTC. The timestamp can also be obtained using the <see cref="GetCurrentTimestamp"/> method.
         /// </remarks>
-        public void ScheduleNotification(string uniqueId, string title, string text, long fireTimestamp, string androidSmallIcon = "", string androidLargeIcon = "") {
+        public void ScheduleNotification(string uniqueId, string title, string text, long fireTimestamp, AndroidOptions? androidOptions = null) {
             Log($"Setting notification \"{uniqueId}\": title=\"{title}\", text=\"{text}\", fireTimestamp=\"{fireTimestamp}\"");
+
+#if UNITY_ANDROID
+            AndroidOptions options = AndroidOptions.Override(_defaultAndroidOptions, androidOptions);
+
+            // ReSharper disable once PossibleInvalidOperationException
+            Color accentColor = options.AccentColor.Value;
+#endif
 
             _notifications.SetNotification(new NotificationsCollection.Notification {
                 uniqueId = uniqueId,
                 title = title,
                 text = text,
                 fireTimestamp = fireTimestamp,
-                androidSmallIcon = androidSmallIcon,
-                androidLargeIcon = androidLargeIcon
+#if UNITY_ANDROID
+                androidSmallIcon = options.SmallIconName,
+                androidLargeIcon = options.LargeIconName,
+                androidAccentColorR = accentColor.r,
+                androidAccentColorG = accentColor.g,
+                androidAccentColorB = accentColor.b,
+                androidAccentColorA = accentColor.a
+#endif
             });
 
             ResetDebounceTimer();
@@ -116,13 +128,27 @@ namespace Sun {
         /// <returns>The current timestamp as a long value.</returns>
         public static long GetCurrentTimestamp() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
+        /// <summary>
+        /// Clears all delivered notifications from the system.
+        /// </summary>
+        public void ClearDeliveredNotifications() {
+            Log("Clearing delivered notifications");
+
+#if UNITY_ANDROID
+            AndroidNotifications.ClearDeliveredNotifications();
+#elif UNITY_IOS
+            iOSNotifications.ClearDeliveredNotifications();
+#endif
+        }
+
         #region Private
 
         // Debouncing
 
         private void ResetDebounceTimer() {
             if (_debounceTimer < 0) {
-                _debounceTimer = _debounceInterval;
+                // ReSharper disable once PossibleInvalidOperationException
+                _debounceTimer = _config.DebounceInterval.Value;
                 Log("Debounce timer reset");
             }
         }
@@ -158,7 +184,8 @@ namespace Sun {
         // Other
 
         private void Log(string message) {
-            if (!_loggingEnabled) {
+            // ReSharper disable once PossibleInvalidOperationException
+            if (!_config.EnableLogging.Value) {
                 return;
             }
 
@@ -191,23 +218,14 @@ namespace Sun {
 #endif
         }
 
-        private void PlatformScheduleNotification(NotificationsCollection.Notification notification) {
+        private static void PlatformScheduleNotification(NotificationsCollection.Notification notification) {
 #if UNITY_ANDROID
-            string smallIcon = notification.androidSmallIcon;
-            if (string.IsNullOrEmpty(smallIcon)) {
-                smallIcon = _defaultAndroidSmallIcon;
-            }
-
-            string largeIcon = notification.androidLargeIcon;
-            if (string.IsNullOrEmpty(largeIcon)) {
-                largeIcon = _defaultAndroidLargeIcon;
-            }
-
             AndroidNotifications.ScheduleNotification(notification.title,
                 notification.text,
                 DateTimeOffset.FromUnixTimeSeconds(notification.fireTimestamp).LocalDateTime,
-                smallIcon,
-                largeIcon
+                notification.androidSmallIcon,
+                notification.androidLargeIcon,
+                new Color(notification.androidAccentColorR, notification.androidAccentColorG, notification.androidAccentColorB, notification.androidAccentColorA)
             );
 #elif UNITY_IOS
             iOSNotifications.ScheduleNotification(
@@ -218,19 +236,16 @@ namespace Sun {
 #endif
         }
 
-        /// <summary>
-        /// Clears all delivered notifications from the system.
-        /// </summary>
-        public void ClearDeliveredNotifications() {
-            Log("Clearing delivered notifications");
-
-#if UNITY_ANDROID
-            AndroidNotifications.ClearDeliveredNotifications();
-#elif UNITY_IOS
-            iOSNotifications.ClearDeliveredNotifications();
-#endif
-        }
-
         #endregion
+
+        public struct Config {
+            public float? DebounceInterval;
+            public bool? EnableLogging;
+
+            public static Config Default => new Config {
+                DebounceInterval = 1f,
+                EnableLogging = false
+            };
+        }
     }
 }

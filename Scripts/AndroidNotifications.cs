@@ -34,14 +34,14 @@ namespace Sun {
             yield return new WaitWhile(() => request.Status == PermissionStatus.RequestPending);
         }
 
-        internal static void ScheduleNotification(string title, string text, DateTime fireTime, string smallIcon, string largeIcon) {
+        internal static void ScheduleNotification(string title, string text, DateTime fireTime, string smallIcon, string largeIcon, Color accentColor) {
             AndroidNotification notification = new AndroidNotification {
                 Title = title,
                 Text = text,
                 FireTime = fireTime,
                 SmallIcon = smallIcon,
                 LargeIcon = largeIcon,
-                Color = new Color(0, 0, 0, 0)
+                Color = accentColor
             };
 
             AndroidNotificationCenter.SendNotification(notification, ChannelId);

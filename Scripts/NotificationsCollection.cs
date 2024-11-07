@@ -51,8 +51,15 @@ namespace Sun {
             public string title;
             public string text;
             public long fireTimestamp;
+
+#if UNITY_ANDROID
             public string androidSmallIcon;
             public string androidLargeIcon;
+            public float androidAccentColorR;
+            public float androidAccentColorG;
+            public float androidAccentColorB;
+            public float androidAccentColorA;
+#endif
         }
     }
 }
