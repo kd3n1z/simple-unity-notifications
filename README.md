@@ -43,7 +43,7 @@ notificationsManager.Initialize(
 
 #### Scheduling
 
-To schedule a notification, use the `SetNotification` method provided by the `NotificationsManager`. This method allows you to create notifications by specifying a unique identifier, title, content text, and the time at which the notification should fire. The notification time can be set using either a `DateTime` object or a **UTC Unix timestamp (in seconds)**. Additionally, you can specify Android icons.
+To schedule a notification, use the `ScheduleNotification` method provided by the `NotificationsManager`. This method allows you to create notifications by specifying a unique identifier, title, content text, and the time at which the notification should fire. The notification time can be set using either a `DateTime` object or a **UTC Unix timestamp (in seconds)**. Additionally, you can specify Android icons.
 
 -   `uniqueId` (string): A unique identifier for the notification.
 -   `title` (string): The title displayed at the top of the notification.
@@ -61,7 +61,7 @@ Example using `DateTime`:
 
 ```csharp
 // Schedule a notification for when lives are fully restored in 1 hour
-notificationsManager.SetNotification(
+notificationsManager.ScheduleNotification(
     "lives_restored",
     "Lives Restored!",
     "Your lives have been fully restored. Jump back into the game!",
@@ -75,7 +75,7 @@ Example using a **Unix timestamp**:
 
 ```csharp
 // Schedule a notification for when lives are fully restored in 1 hour (3600 seconds)
-notificationsManager.SetNotification(
+notificationsManager.ScheduleNotification(
     "lives_restored",
     "Lives Restored!",
     "Your lives have been fully restored. Jump back into the game!",
@@ -87,7 +87,7 @@ notificationsManager.SetNotification(
 
 #### Unscheduling
 
-To remove a notification, use the `RemoveNotification` method.
+To remove a notification, use the `UnscheduleNotification` method.
 
 -   `uniqueId` (string): A unique identifier for the notification.
 
@@ -98,7 +98,7 @@ Example:
 
 ```csharp
 // Remove a previously scheduled notification
-notificationsManager.RemoveNotification("lives_restored");
+notificationsManager.UnscheduleNotification("lives_restored");
 ```
 
 That's it. The `NotificationsManager` automatically persists and reschedules notifications as needed, while the `debounceInterval` prevents frequent updates.
