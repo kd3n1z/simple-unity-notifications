@@ -33,6 +33,7 @@ namespace Sun {
         }
 
         public static void ClearScheduledNotifications() => iOSNotificationCenter.RemoveAllScheduledNotifications();
+        public static void ClearDeliveredNotifications() => iOSNotificationCenter.RemoveAllDeliveredNotifications();
     }
 }
 

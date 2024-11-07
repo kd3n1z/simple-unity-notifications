@@ -40,13 +40,15 @@ namespace Sun {
                 Text = text,
                 FireTime = fireTime,
                 SmallIcon = smallIcon,
-                LargeIcon = largeIcon
+                LargeIcon = largeIcon,
+                Color = new Color(0, 0, 0, 0)
             };
 
             AndroidNotificationCenter.SendNotification(notification, ChannelId);
         }
 
         public static void ClearScheduledNotifications() => AndroidNotificationCenter.CancelAllScheduledNotifications();
+        public static void ClearDeliveredNotifications() => AndroidNotificationCenter.CancelAllDisplayedNotifications();
     }
 }
 
