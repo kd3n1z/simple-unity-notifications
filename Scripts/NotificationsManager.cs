@@ -60,7 +60,7 @@ namespace Sun {
         }
 
         /// <summary>
-        /// Sets a notification with a specified unique ID, title, text, and fire date/time using the default icons.
+        /// Schedules a notification with a specified unique ID, title, text, and fire date/time using the default icons.
         /// </summary>
         /// <param name="uniqueId">The unique identifier for the notification.</param>
         /// <param name="title">The title of the notification.</param>
@@ -68,11 +68,11 @@ namespace Sun {
         /// <param name="fireDateTime">The date and time when the notification should be triggered.</param>
         /// <param name="androidSmallIcon">Optional. The small icon for Android notifications.</param>
         /// <param name="androidLargeIcon">Optional. The large icon for Android notifications.</param>
-        public void SetNotification(string uniqueId, string title, string text, DateTime fireDateTime, string androidSmallIcon = "", string androidLargeIcon = "") =>
-            SetNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds(), androidSmallIcon, androidLargeIcon);
+        public void ScheduleNotification(string uniqueId, string title, string text, DateTime fireDateTime, string androidSmallIcon = "", string androidLargeIcon = "") =>
+            ScheduleNotification(uniqueId, title, text, new DateTimeOffset(fireDateTime.ToUniversalTime()).ToUnixTimeSeconds(), androidSmallIcon, androidLargeIcon);
 
         /// <summary>
-        /// Sets a notification with a specified unique ID, title, text, and fire timestamp.
+        /// Schedules a notification with a specified unique ID, title, text, and fire timestamp.
         /// </summary>
         /// <param name="uniqueId">The unique identifier for the notification.</param>
         /// <param name="title">The title of the notification.</param>
@@ -83,7 +83,7 @@ namespace Sun {
         /// <remarks>
         /// The <paramref name="fireTimestamp"/> must be in seconds and in UTC. The timestamp can also be obtained using the <see cref="GetCurrentTimestamp"/> method.
         /// </remarks>
-        public void SetNotification(string uniqueId, string title, string text, long fireTimestamp, string androidSmallIcon = "", string androidLargeIcon = "") {
+        public void ScheduleNotification(string uniqueId, string title, string text, long fireTimestamp, string androidSmallIcon = "", string androidLargeIcon = "") {
             Log($"Setting notification \"{uniqueId}\": title=\"{title}\", text=\"{text}\", fireTimestamp=\"{fireTimestamp}\"");
 
             _notifications.SetNotification(new NotificationsCollection.Notification {
@@ -99,10 +99,10 @@ namespace Sun {
         }
 
         /// <summary>
-        /// Removes a notification specified by its unique ID.
+        /// Unschedules (removes) a notification specified by its unique ID.
         /// </summary>
         /// <param name="uniqueId">The unique identifier for the notification to be removed.</param>
-        public void RemoveNotification(string uniqueId) {
+        public void UnscheduleNotification(string uniqueId) {
             Log($"Removing notification \"{uniqueId}\"");
 
             if (_notifications.RemoveNotification(uniqueId)) {
@@ -149,7 +149,7 @@ namespace Sun {
             ClearScheduledNotifications();
 
             foreach (NotificationsCollection.Notification notification in _notifications.list) {
-                ScheduleNotification(notification);
+                PlatformScheduleNotification(notification);
             }
 
             Log("Notifications rescheduled");
@@ -191,7 +191,7 @@ namespace Sun {
 #endif
         }
 
-        private void ScheduleNotification(NotificationsCollection.Notification notification) {
+        private void PlatformScheduleNotification(NotificationsCollection.Notification notification) {
 #if UNITY_ANDROID
             string smallIcon = notification.androidSmallIcon;
             if (string.IsNullOrEmpty(smallIcon)) {
