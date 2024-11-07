@@ -222,6 +222,8 @@ namespace Sun {
         /// Clears all delivered notifications from the system.
         /// </summary>
         public void ClearDeliveredNotifications() {
+            Log("Clearing delivered notifications");
+
 #if UNITY_ANDROID
             AndroidNotifications.ClearDeliveredNotifications();
 #elif UNITY_IOS
