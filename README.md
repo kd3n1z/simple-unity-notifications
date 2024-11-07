@@ -101,6 +101,17 @@ Example:
 notificationsManager.UnscheduleNotification("lives_restored");
 ```
 
+#### Clearing Delivered Notifications
+
+To clear all notifications that have been delivered, use the `ClearDeliveredNotifications` method.
+
+Example:
+
+```csharp
+// Clear all delivered notifications
+notificationsManager.ClearDeliveredNotifications();
+```
+
 That's it. The `NotificationsManager` automatically persists and reschedules notifications as needed, while the `debounceInterval` prevents frequent updates.
 
 ## Recommended Project Settings
