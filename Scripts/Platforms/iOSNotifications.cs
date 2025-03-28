@@ -12,7 +12,7 @@ namespace Sun {
             yield return new WaitWhile(() => !request.IsFinished);
         }
 
-        internal static void ScheduleNotification(string title, string body, TimeSpan timeInterval) {
+        internal static void Schedule(TimeSpan timeInterval, string title, string body) {
             iOSNotificationTimeIntervalTrigger timeTrigger = new iOSNotificationTimeIntervalTrigger() {
                 TimeInterval = timeInterval,
                 Repeats = false
@@ -31,8 +31,8 @@ namespace Sun {
             iOSNotificationCenter.ScheduleNotification(notification);
         }
 
-        public static void ClearScheduledNotifications() => iOSNotificationCenter.RemoveAllScheduledNotifications();
-        public static void ClearDeliveredNotifications() => iOSNotificationCenter.RemoveAllDeliveredNotifications();
+        public static void ClearScheduled() => iOSNotificationCenter.RemoveAllScheduledNotifications();
+        public static void ClearDelivered() => iOSNotificationCenter.RemoveAllDeliveredNotifications();
     }
 }
 

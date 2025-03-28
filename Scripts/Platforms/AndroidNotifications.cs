@@ -34,7 +34,7 @@ namespace Sun {
             yield return new WaitWhile(() => request.Status == PermissionStatus.RequestPending);
         }
 
-        internal static void ScheduleNotification(string title, string text, DateTime fireTime, string smallIcon, string largeIcon, Color accentColor) {
+        internal static void Schedule(DateTime fireTime, string title, string text, string smallIcon, string largeIcon, Color accentColor) {
             AndroidNotification notification = new AndroidNotification {
                 Title = title,
                 Text = text,
@@ -47,8 +47,8 @@ namespace Sun {
             AndroidNotificationCenter.SendNotification(notification, ChannelId);
         }
 
-        public static void ClearScheduledNotifications() => AndroidNotificationCenter.CancelAllScheduledNotifications();
-        public static void ClearDeliveredNotifications() => AndroidNotificationCenter.CancelAllDisplayedNotifications();
+        public static void ClearScheduled() => AndroidNotificationCenter.CancelAllScheduledNotifications();
+        public static void ClearDelivered() => AndroidNotificationCenter.CancelAllDisplayedNotifications();
     }
 }
 
