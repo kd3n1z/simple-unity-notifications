@@ -1,12 +1,12 @@
 namespace Sun {
     public struct NotificationsConfig {
-        public float DebounceInterval;
-        public float MaxDebounceInterval;
+        public float DebounceTimeout;
+        public float ThrottleTimeout;
         public bool AutoClearDelivered;
 
         public static readonly NotificationsConfig Default = new NotificationsConfig() {
-            DebounceInterval = 1,
-            MaxDebounceInterval = 5,
+            DebounceTimeout = 1,
+            ThrottleTimeout = 5,
             AutoClearDelivered = true,
         };
     }

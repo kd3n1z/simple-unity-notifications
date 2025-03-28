@@ -24,7 +24,7 @@ namespace Sun {
         #region Unity Event Methods
 
         private bool _rescheduleRequested;
-        private float _maxDebounceTimer;
+        private float _throttleTimer;
         private float _debounceTimer;
 
         private void Update() {
@@ -35,9 +35,9 @@ namespace Sun {
             float deltaTime = Time.unscaledDeltaTime;
 
             _debounceTimer -= deltaTime;
-            _maxDebounceTimer -= deltaTime;
+            _throttleTimer -= deltaTime;
 
-            if (_debounceTimer < 0 || _maxDebounceTimer < 0) {
+            if (_debounceTimer < 0 || _throttleTimer < 0) {
                 Reschedule();
             }
         }
@@ -56,11 +56,11 @@ namespace Sun {
 
         private void RequestReschedule() {
             if (!_rescheduleRequested) {
-                _maxDebounceTimer = _config.MaxDebounceInterval;
+                _throttleTimer = _config.ThrottleTimeout;
             }
 
             _rescheduleRequested = true;
-            _debounceTimer = _config.DebounceInterval;
+            _debounceTimer = _config.DebounceTimeout;
         }
 
         private void Reschedule() {
