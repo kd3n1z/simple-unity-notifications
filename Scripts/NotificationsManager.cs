@@ -3,6 +3,10 @@ using System.Collections;
 using UnityEngine;
 
 namespace Sun {
+    /// <summary>
+    /// Manages the scheduling, persistence, and authorization of notifications. This manager handles the lifecycle of notifications,
+    /// including rescheduling, clearing delivered notifications, and integrating with platform-specific notification systems.
+    /// </summary>
     public class NotificationsManager : MonoBehaviour {
         private const string PlayerPrefsKey = nameof(Sun) + "." + nameof(NotificationsManager) + ".Config";
 
@@ -146,6 +150,13 @@ namespace Sun {
 
         #region Public
 
+        /// <summary>
+        /// Initializes the notification manager with the specified configuration and default options.
+        /// Loads existing notifications from persistent storage if available, then requests notification authorization.
+        /// </summary>
+        /// <param name="config">The configuration settings for notifications.</param>
+        /// <param name="defaultCommonOptions">Optional default common options for notifications.</param>
+        /// <param name="defaultAndroidOptions">Optional default Android-specific options for notifications.</param>
         public void Initialize(NotificationsConfig config, CommonOptions? defaultCommonOptions = null, AndroidOptions? defaultAndroidOptions = null) {
             if (_initialized) {
                 throw new Exception($"{nameof(NotificationsManager)} already initialized");
@@ -171,6 +182,13 @@ namespace Sun {
             StartCoroutine(RequestAuthorizationRoutine());
         }
 
+        /// <summary>
+        /// Schedules a new notification with the specified ID and fire time, overwriting any existing notification with the same ID.
+        /// </summary>
+        /// <param name="id">Unique identifier for the notification, used to overwrite existing notifications if present.</param>
+        /// <param name="fireTimestamp">The time at which the notification should be fired.</param>
+        /// <param name="commonOverrides">Optional overrides for common notification options.</param>
+        /// <param name="androidOverrides">Optional overrides for Android-specific notification options.</param>
         public void Schedule(string id, DateTime fireTimestamp, CommonOptions? commonOverrides = null, AndroidOptions? androidOverrides = null) {
             _notifications[id] = new SavedNotification(
                 fireTimestamp,
@@ -181,11 +199,18 @@ namespace Sun {
             RequestReschedule();
         }
 
+        /// <summary>
+        /// Removes a scheduled notification by its identifier.
+        /// </summary>
+        /// <param name="id">Unique identifier for the notification to remove.</param>
         public void Unschedule(string id) {
             _notifications.Remove(id);
             RequestReschedule();
         }
 
+        /// <summary>
+        /// Clears delivered notifications.
+        /// </summary>
         public void ClearDelivered() {
 #if UNITY_EDITOR || UNITY_DEVELOPMENT
             Log("Clearing delivered notifications");
